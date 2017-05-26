@@ -4,11 +4,21 @@
   <template>
     <style>
       :host {
-        display: block;
+        display: inline-block;
+        width: 150px;
+        height: 150px;
+        border: solid 1px #333;
+        margin: 2px;
+      }
+
+      #block-container {
+        height: inherit;
       }
     </style>
 
-    <h1>Hello world!</h1>
+    <div  id="block-container"
+          style$="background-color: [[blockColor]]">
+    </div>
   </template>
 
   <script>
@@ -16,7 +26,10 @@
       static get is() { return 'nd-ct-block'; }
       static get properties() {
         return {
-
+          blockColor: {
+            type: String,
+            value: 'red'
+          },
         };
       }
     }

@@ -14,16 +14,22 @@
       #block-container {
         height: inherit;
       }
+
+      #block-container:hover {
+        cursor: pointer;
+      }
     </style>
 
     <div  id="block-container"
-          style$="background-color: [[blockColor]]">
+          style$="background-color: [[blockColor]]"
+          on-click="_handleClick">
     </div>
   </template>
 
   <script>
     class NdCtBlock extends Polymer.Element {
       static get is() { return 'nd-ct-block'; }
+      
       static get properties() {
         return {
           blockColor: {
@@ -31,6 +37,16 @@
             value: 'red'
           },
         };
+      }
+
+      _handleClick(e) {
+        this.dispatchEvent(new CustomEvent('getColorPicked', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            colorPicked: this.blockColor
+          }
+        }));
       }
     }
 

@@ -1,0 +1,45 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="/src/nd-ct-block.html">
+
+<dom-module id="nd-ct-app">
+  <template>
+    <style>
+      :host {
+        
+      }
+    </style>
+
+    <h1>You picked [[colorPicked]]</h1>
+    <nd-ct-block></nd-ct-block>
+    <nd-ct-block block-color="blue"></nd-ct-block>
+  </template>
+
+  <script>
+    class NdCtApp extends Polymer.Element {
+      static get is() { return 'nd-ct-app'; }
+
+      static get properties() {
+        return {
+          colorPicked: {
+            type: String
+          }
+        };
+      }
+
+      ready() {
+        super.ready();
+
+        this.addEventListener('getColorPicked', e => {
+          this.colorPicked = e.detail.colorPicked;
+        });
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeEventListener('getColorClicked');
+      }
+    }
+
+    window.customElements.define(NdCtApp.is, NdCtApp);
+  </script>
+</dom-module>

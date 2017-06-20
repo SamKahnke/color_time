@@ -1,42 +1,63 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="/src/nd-ct-block.html">
+<link rel="import" href="/src/nd-ct-game-field.html">
 
 <dom-module id="nd-ct-app">
   <template>
     <style>
       :host {
-        
       }
     </style>
 
     <h1>You picked [[colorPicked]]</h1>
-    <nd-ct-block></nd-ct-block>
-    <nd-ct-block block-color="blue"></nd-ct-block>
+    <nd-ct-game-field id="game-field"></nd-ct-game-field>
   </template>
 
   <script>
     class NdCtApp extends Polymer.Element {
+
       static get is() { return 'nd-ct-app'; }
 
       static get properties() {
         return {
           colorPicked: {
             type: String
+          },
+          numBlocks: {
+            type: Number,
+            value: 5
           }
         };
       }
 
       ready() {
         super.ready();
+        this._setUpGame();
+      }
 
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._removeListeners();
+      }
+
+      _setUpGame() {
+        this._addListeners();
+        this._setUpGameField();
+      }
+
+      _setUpGameField() {
+        let gameField = this.shadowRoot.getElementById('game-field');
+        gameField.setAttribute('number-of-blocks', this.numBlocks);
+        gameField.setUpGameField();
+      }
+
+      _addListeners() {
         this.addEventListener('getColorPicked', e => {
           this.colorPicked = e.detail.colorPicked;
         });
       }
 
-      disconnectedCallback() {
-        super.disconnectedCallback();
-        this.removeEventListener('getColorClicked');
+      _removeListeners() {
+        this.removeEventListener('getColorPicked');
       }
     }
 

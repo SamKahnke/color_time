@@ -1,0 +1,94 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="/src/nd-ct-block.html">
+
+<dom-module id="nd-ct-game-field">
+  <template>
+    <style>
+      :host {
+      }
+
+      #game-field {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+
+    <div id="game-field" style$="width: [[gameFieldWidth]]px"></div>
+  </template>
+
+  <script>
+    class NdCtGameField extends Polymer.Element {
+      static get is() { return 'nd-ct-game-field'; }
+      
+      static get properties() {
+        return {
+          numberOfBlocks: {
+            type: Number
+          },
+          gameFieldWidth: {
+            type: String
+          }
+        }
+      }
+
+      _setGameFieldWidth() {
+        const blockWidth = 150;
+        const spaceBetweenBlocks = 6;
+        const maxBlocksInRow = 8;
+        const maxWidth = maxBlocksInRow * (blockWidth + spaceBetweenBlocks);
+        let paddingAdjustment = this.numberOfBlocks * 6;
+        
+        if (this.numberOfBlocks < maxBlocksInRow) {
+          this.gameFieldWidth = paddingAdjustment + (this.numberOfBlocks * blockWidth);
+        } else {
+          this.gameFieldWidth = maxWidth;
+        }
+      }
+
+      setUpGameField() {
+        const initialColorOptions = ['Blue', 'Red', 'Green', 'Orange', 'Yellow', 'Purple'];
+
+        let gameField = this.shadowRoot.getElementById('game-field');
+        let unusedColors = [];
+        let currentColors = [];
+        let nextRandomColor;
+        let block;
+
+        for (let i = 0, n = this.numberOfBlocks; i < n; i++) {
+          block = document.createElement('nd-ct-block');
+          
+          if (unusedColors.length === 0) {
+            unusedColors = initialColorOptions.slice(0);
+          }
+          
+          nextRandomColor = unusedColors.splice(Math.floor(Math.random() * (unusedColors.length)), 1)[0];
+
+          currentColors.push(nextRandomColor);
+          gameField.appendChild(block).setAttribute('block-color', nextRandomColor);
+        }
+
+        this._setGameFieldWidth();
+        this._dispatchColorAsked(currentColors);
+      }
+
+      _setColorAsked(colors) {
+        return colors[Math.floor(Math.random() * (colors.length))];
+      }
+
+      _dispatchColorAsked(colors) {
+        let color = this._setColorAsked(colors);
+
+        this.dispatchEvent(new CustomEvent('colorAsked',
+          {
+            bubbles: true,
+            composed: true,
+            detail: {
+              color: color
+            }
+          }));
+      }
+    }
+
+    window.customElements.define(NdCtGameField.is, NdCtGameField);
+  </script>
+</dom-module>

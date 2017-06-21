@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="/src/nd-ct-game-field.html">
+<link rel="import" href="/src/nd-ct-dashboard.html">
 
 <dom-module id="nd-ct-app">
   <template>
@@ -8,7 +9,7 @@
       }
     </style>
 
-    <h1>You picked [[colorPicked]]</h1>
+    <nd-ct-dashboard id="dashboard"></nd-ct-dashboard>
     <nd-ct-game-field id="game-field"></nd-ct-game-field>
   </template>
 
@@ -22,43 +23,107 @@
           colorPicked: {
             type: String
           },
+          colorAsked: {
+            type: String
+          },
           numBlocks: {
             type: Number,
             value: 5
+          },
+          isCorrect: {
+            type: Boolean
+          },
+          messageText: {
+            type: String
+          },
+          messageColor: {
+            type: String
+          },
+          pauseTime: {
+            type: Number,
+            value: 1500
           }
         };
       }
 
       ready() {
         super.ready();
-        this._setUpGame();
+
+        let elems = {
+          gameField: this.shadowRoot.getElementById('game-field'),
+          dashboard: this.shadowRoot.getElementById('dashboard'),
+          allColorBlocks: this.shadowRoot.getElementById('game-field').shadowRoot.childNodes[2]
+        }
+
+        this._setUpGame(elems);
       }
 
       disconnectedCallback() {
         super.disconnectedCallback();
-        this._removeListeners();
+        this.removeEventListener('getColorPicked');
+        this.removeEventListener('getColorAsked');
       }
 
-      _setUpGame() {
-        this._addListeners();
-        this._setUpGameField();
+      _setUpGame(elems) {
+        this._addListeners(elems);
+        this._setUpGameField(elems);
       }
 
-      _setUpGameField() {
-        let gameField = this.shadowRoot.getElementById('game-field');
-        gameField.setAttribute('number-of-blocks', this.numBlocks);
-        gameField.setUpGameField();
+      _setUpGameField(elems) {
+        elems.gameField.setAttribute('number-of-blocks', this.numBlocks);
+        elems.gameField.setUpGameField();
       }
 
-      _addListeners() {
+      _addListeners(elems) {
         this.addEventListener('getColorPicked', e => {
           this.colorPicked = e.detail.colorPicked;
+          this._judgeResponse();
+          this._displayResponseMessage(elems);
+          this._resetQuestion(elems);
+        });
+
+        this.addEventListener('getColorAsked', e => {
+          this.colorAsked = e.detail.colorAsked;
+          this.messageText = 'Pick the ' + this.colorAsked + ' square';
+          this.messageColor = 'black';
+          elems.dashboard.setAttribute('message-text', this.messageText);
+          elems.dashboard.setAttribute('message-color', this.messageColor);
         });
       }
 
-      _removeListeners() {
-        this.removeEventListener('getColorPicked');
+      _judgeResponse() {
+        this.isCorrect = (this.colorPicked === this.colorAsked) ? true : false;
       }
+
+      _displayResponseMessage(elems) {
+        let correctMessage = 'Correct!';
+        let incorrectMessage = 'Wrong! You picked ' + this.colorPicked + '.';
+
+        if (this.isCorrect) {
+          this.messageText = correctMessage;
+          this.messageColor = 'green';
+        } else {
+          this.messageText = incorrectMessage;
+          this.messageColor = 'red';
+        }
+
+        elems.dashboard.setAttribute('message-text', this.messageText);
+        elems.dashboard.setAttribute('message-color', this.messageColor);
+      }
+
+      _resetQuestion(elems) {
+        setTimeout(() => {this._refreshElements(elems)}, this.pauseTime);
+      }
+
+      _refreshElements(elems) {
+        this._emptyGameField(elems);
+        this._setUpGameField(elems);
+      }
+
+      _emptyGameField(elems) {
+        elems.allColorBlocks.innerHTML = '';
+      }
+      
     }
 
     window.customElements.define(NdCtApp.is, NdCtApp);

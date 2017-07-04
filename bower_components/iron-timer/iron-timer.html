@@ -1,0 +1,121 @@
+<!doctype html>
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+A simple countdown timer
+
+### Example
+
+```html
+<iron-timer start-time="10" current-time="{{currentTime}}"></iron-timer>
+```
+
+@demo demo/index.html
+-->
+<dom-module id="iron-timer">
+</dom-module>
+
+<script>
+
+(function() {
+
+	Polymer({
+		is: 'iron-timer',
+		/**
+		 * Fired when the timer reaches zero
+		 *
+		 * @event iron-timer-end
+		 */
+		properties: {
+			/**
+			 * Start time for the timer in seconds
+			 * @default 0
+			 */
+			startTime: {
+				type: Number,
+				value: 0
+			},
+			/**
+			 * Current time of the timer, in seconds
+			 */
+			currentTime: {
+				type: Number,
+				notify: true
+			},
+			/**
+			 * True if the timer is currently running
+			 * @default false
+			 */
+			isRunning: {
+				type: Boolean,
+				reflectToAttribute: true,
+				notify: true,
+				value: false
+			},
+			/**
+			 * Time the timer has spent running since it was started
+			 */
+			_elapsed: {
+				type: Number,
+				value: 0
+			}
+		},
+		ready: function() {
+			this.set('currentTime', this.startTime);
+		},
+		/**
+		 * Starts the timer from the provided startTime
+		 */
+		start: function() {
+			if (!this.startTime || this.isRunning) {
+				// TODO: what should happen when timer is started without startTime?
+				return;
+			}
+			this._elapsed = Math.floor(performance.now()/1000);
+			this.isRunning = true;
+
+			window.requestAnimationFrame(this._decreaseTimer.bind(this));
+		},
+		/**
+		 * Pauses the timer
+		 */
+		pause: function() {
+			this.isRunning = false;
+		},
+		/**
+		 * Returns true if the timer has been started, i.e. if it's not its original value
+		 * Note: this is independed from whether the timer is currently running or paused
+		 */
+		isStarted: function() {
+			return Boolean(this._elapsed);
+		},
+		/**
+		 * Resets the timer to the provided startTime
+		 */
+		reset: function() {
+			this.set('currentTime', this.startTime);
+			this.set('_elapsed', 0);
+		},
+		_decreaseTimer: function(timestamp) {
+			if (!this.isRunning) {
+				return;
+			}
+			if (this.currentTime === 0) {
+				// timer is over
+				this.pause();
+				this.fire('iron-timer-end');
+				return;
+			}
+			var now = Math.floor(timestamp/1000);
+			// Compute the relative progress based on the time spent running
+			var progress = now - this._elapsed;
+			this.currentTime = this.currentTime - progress;
+			this._elapsed = now;
+
+			window.requestAnimationFrame(this._decreaseTimer.bind(this));
+		}
+	});
+
+})();
+
+</script>

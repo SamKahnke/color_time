@@ -42,6 +42,10 @@
           pauseTime: {
             type: Number,
             value: 1500
+          },
+          allowClicks: {
+            type: Boolean,
+            value: true
           }
         };
       }
@@ -52,7 +56,8 @@
         let elems = {
           gameField: this.shadowRoot.getElementById('game-field'),
           dashboard: this.shadowRoot.getElementById('dashboard'),
-          allColorBlocks: this.shadowRoot.getElementById('game-field').shadowRoot.childNodes[2]
+          allColorBlocks: this.shadowRoot.getElementById('game-field').shadowRoot.childNodes[2],
+          timer: this.shadowRoot.getElementById('dashboard').shadowRoot.getElementById('timer')
         }
 
         this._setUpGame(elems);
@@ -77,22 +82,33 @@
       _addListeners(elems) {
         this.addEventListener('getColorPicked', e => {
           this.colorPicked = e.detail.colorPicked;
-          this._judgeResponse();
-          this._displayResponseMessage(elems);
-          this._resetQuestion(elems);
+          if (this.allowClicks == true) {
+            this._pauseAndResetTimer(elems);
+            this._judgeResponse();
+            this._displayResponseMessage(elems);
+            this._resetQuestion(elems);
+          }
+          this.allowClicks = false;
         });
 
         this.addEventListener('getColorAsked', e => {
           this.colorAsked = e.detail.colorAsked;
-          this.messageText = 'Pick the ' + this.colorAsked + ' square';
-          this.messageColor = 'black';
-          elems.dashboard.setAttribute('message-text', this.messageText);
-          elems.dashboard.setAttribute('message-color', this.messageColor);
+          this.allowClicks = true;
+          this._displayQuestionMessage(elems);
+          elems.timer.start();
         });
       }
 
       _judgeResponse() {
         this.isCorrect = (this.colorPicked === this.colorAsked) ? true : false;
+      }
+
+      _displayQuestionMessage(elems) {
+        this.messageText = 'Pick the ' + this.colorAsked + ' square';
+        this.messageColor = 'black';
+
+        elems.dashboard.setAttribute('message-text', this.messageText);
+        elems.dashboard.setAttribute('message-color', this.messageColor);
       }
 
       _displayResponseMessage(elems) {
@@ -113,6 +129,11 @@
 
       _resetQuestion(elems) {
         setTimeout(() => {this._refreshElements(elems)}, this.pauseTime);
+      }
+
+      _pauseAndResetTimer(elems) {
+        elems.timer.pause();
+        elems.timer.currentTime = elems.timer.startTime;
       }
 
       _refreshElements(elems) {

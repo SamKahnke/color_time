@@ -1,0 +1,26 @@
+{
+  "name": "iron-timer",
+  "authors": [
+    "collaborne"
+  ],
+  "description": "A simple countdown timer",
+  "main": "iron-timer.html",
+  "keywords": [
+    "web-components",
+    "polymer",
+    "iron",
+	"timer"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/collaborne/iron-timer",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^2.0.0",
+    "web-component-tester": "*"
+  }
+}

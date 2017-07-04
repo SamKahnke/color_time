@@ -2,7 +2,8 @@
   "name": "nd-ct-block",
   "main": "nd-ct-block.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "simple-timer": "annsonn/simple-timer#^1.0.2"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

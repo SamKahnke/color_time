@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/simple-timer/simple-timer.html">
 
 <dom-module id="nd-ct-dashboard">
   <template>
@@ -15,6 +16,7 @@
     </style>
   
     <h1 id="message" style$="color: [[messageColor]]">[[messageText]]</h1>
+    <simple-timer id="timer" start-time="3"></simple-timer>
   </template>
 
   <script>
@@ -31,7 +33,8 @@
           },
           messageColor: {
             type: String
-          }
+          },
+
         }
       }
     }

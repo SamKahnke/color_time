@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+		<link rel="import" href="../../paper-button/paper-button.html">
+		<link rel="import" href="../iron-timer.html">
+		<title>Demo</title>
+	</head>
+
+	<body>
+		<dom-bind>
+			<template>
+				<iron-timer id="timer" start-time="5" current-time="{{currentTime}}"></iron-timer>
+				[[currentTime]]<br/>
+				<paper-button on-tap="start" raised>Start/Resume timer</paper-button><paper-button on-tap="pause" raised>Pause timer</paper-button><paper-button on-tap="reset" raised>Reset timer</paper-button>
+
+				<script>
+					var scope = document.querySelector('dom-bind');
+					scope.start = function() {
+						this.$.timer.start();
+					};
+					scope.pause = function() {
+						this.$.timer.pause();
+					};
+					scope.reset = function() {
+						this.$.timer.reset();
+					};
+				</script>
+			</template>
+		</dom-bind>
+
+	</body>
+</html>

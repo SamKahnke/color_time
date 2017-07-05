@@ -46,6 +46,10 @@
           allowClicks: {
             type: Boolean,
             value: true
+          },
+          isTimeUp: {
+            type: String,
+            value: false
           }
         };
       }
@@ -80,27 +84,53 @@
       }
 
       _addListeners(elems) {
-        this.addEventListener('getColorPicked', e => {
-          this.colorPicked = e.detail.colorPicked;
-          if (this.allowClicks == true) {
-            this._pauseAndResetTimer(elems);
-            this._judgeResponse();
-            this._displayResponseMessage(elems);
-            this._resetQuestion(elems);
-          }
-          this.allowClicks = false;
+        this.addEventListener('getColorAsked', e => {
+          this._handleColorAsked(elems, e);
         });
 
-        this.addEventListener('getColorAsked', e => {
-          this.colorAsked = e.detail.colorAsked;
-          this.allowClicks = true;
-          this._displayQuestionMessage(elems);
-          elems.timer.start();
+        this.addEventListener('getColorPicked', e => {
+          this._handleColorPicked(elems, e);
+        });
+
+        elems.timer.addEventListener('is-running-changed', e => {
+          this._handleTimeUp(elems);
         });
       }
 
-      _judgeResponse() {
-        this.isCorrect = (this.colorPicked === this.colorAsked) ? true : false;
+      _handleColorAsked(elems, e) {
+        this.colorAsked = e.detail.colorAsked;
+        this.allowClicks = true;
+
+        this._displayQuestionMessage(elems);
+        elems.timer.start();
+      }
+
+      _handleColorPicked(elems, e) {
+        this.colorPicked = e.detail.colorPicked;
+
+        if (this.allowClicks) {
+            elems.timer.pause();
+            this._judgeResponse();
+            this._displayResponseMessage(elems);
+            this._resetQuestion(elems);
+        }
+
+        this.allowClicks = false;
+      }
+
+      _handleTimeUp(elems) {
+        if (!elems.timer.isRunning && elems.timer.currentTime == 0) {
+          this.isTimeUp = true;
+
+          if (this.allowClicks) {
+            elems.timer.pause();
+            this._displayResponseMessage(elems);
+            this._resetQuestion(elems);
+          }
+
+        this.allowClicks = false;
+        this.isTimeUp = false;
+        }
       }
 
       _displayQuestionMessage(elems) {
@@ -114,8 +144,12 @@
       _displayResponseMessage(elems) {
         let correctMessage = 'Correct!';
         let incorrectMessage = 'Wrong! You picked ' + this.colorPicked + '.';
+        let timeUpMessage = 'Time is up!';
 
-        if (this.isCorrect) {
+        if (this.isTimeUp) {
+          this.messageText = timeUpMessage;
+          this.messageColor = 'red';
+        } else if (this.isCorrect) {
           this.messageText = correctMessage;
           this.messageColor = 'green';
         } else {
@@ -127,16 +161,16 @@
         elems.dashboard.setAttribute('message-color', this.messageColor);
       }
 
+      _judgeResponse() {
+        this.isCorrect = (this.colorPicked === this.colorAsked) ? true : false;
+      }
+
       _resetQuestion(elems) {
         setTimeout(() => {this._refreshElements(elems)}, this.pauseTime);
       }
 
-      _pauseAndResetTimer(elems) {
-        elems.timer.pause();
-        elems.timer.currentTime = elems.timer.startTime;
-      }
-
       _refreshElements(elems) {
+        elems.timer.currentTime = elems.timer.startTime;
         this._emptyGameField(elems);
         this._setUpGameField(elems);
       }

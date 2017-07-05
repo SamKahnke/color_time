@@ -12,6 +12,11 @@
         text-align: center;
         margin-bottom: 50px;
       }
+      #score {
+        font-size: 30px;
+        text-align: center;
+        padding-right: 20px;
+      }
       #timer {
         text-align: center;
         font-size: 40px;
@@ -21,6 +26,7 @@
     </style>
   
     <h1 id="message" style$="color: [[messageColor]]">[[messageText]]</h1>
+    <h2 id="score">Total Points: <span style$="color: [[scoreColor]]">[[totalPoints]]</span></h2>
     <simple-timer id="timer" start-time="3"></simple-timer>
   </template>
 
@@ -39,7 +45,13 @@
           messageColor: {
             type: String
           },
-
+          totalPoints: {
+            type: Number,
+            value: 0
+          },
+          scoreColor: {
+            type: String
+          }
         }
       }
     }

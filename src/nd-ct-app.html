@@ -50,7 +50,27 @@
           isTimeUp: {
             type: String,
             value: false
+          },
+          points: {
+            type: Number
+          },
+          pointMultiplier: {
+            type: Number,
+            value: 100
+          },
+          totalPoints: {
+            type: Number,
+            value: 0
+          },
+          wrongPenalty: {
+            type: Number,
+            value: -200
+          },
+          timeUpPenalty: {
+            type: Number,
+            value: -300
           }
+          
         };
       }
 
@@ -111,6 +131,7 @@
         if (this.allowClicks) {
             elems.timer.pause();
             this._judgeResponse();
+            this._calculateScore(elems);
             this._displayResponseMessage(elems);
             this._resetQuestion(elems);
         }
@@ -124,6 +145,7 @@
 
           if (this.allowClicks) {
             elems.timer.pause();
+            this._calculateScore(elems);
             this._displayResponseMessage(elems);
             this._resetQuestion(elems);
           }
@@ -142,9 +164,9 @@
       }
 
       _displayResponseMessage(elems) {
-        let correctMessage = 'Correct!';
-        let incorrectMessage = 'Wrong! You picked ' + this.colorPicked + '.';
-        let timeUpMessage = 'Time is up!';
+        let correctMessage = 'Correct! ' + this.points;
+        let incorrectMessage = 'Wrong! You picked ' + this.colorPicked + '. ' + this.points;
+        let timeUpMessage = 'Time is up! ' + this.points;
 
         if (this.isTimeUp) {
           this.messageText = timeUpMessage;
@@ -163,6 +185,26 @@
 
       _judgeResponse() {
         this.isCorrect = (this.colorPicked === this.colorAsked) ? true : false;
+      }
+
+      _calculateScore(elems) {
+        if (this.isTimeUp) {
+          this.points = this.timeUpPenalty;
+        } else if (this.isCorrect) {
+          this.points = parseInt(elems.timer.currentTime * this.pointMultiplier);
+        } else {
+          this.points = this.wrongPenalty;
+        }
+
+        this.totalPoints += this.points;
+
+        if (this.totalPoints < 0) {
+          elems.dashboard.setAttribute('score-color', 'red');
+        } else {
+          elems.dashboard.setAttribute('score-color', 'black');
+        }
+
+        elems.dashboard.setAttribute('total-points', this.totalPoints);
       }
 
       _resetQuestion(elems) {

@@ -24,16 +24,25 @@
       }
 
     </style>
-  
-    <h1 id="message" style$="color: [[messageColor]]">[[messageText]]</h1>
-    <h2 id="score">Total Points: <span style$="color: [[scoreColor]]">[[totalPoints]]</span></h2>
-    <simple-timer id="timer" start-time="3"></simple-timer>
+
+    <h1 id="message"
+        style$="color: [[messageColor]]">
+        [[messageText]]
+    </h1>
+    <h2 id="score"
+        style$="visibility: [[displayStatus]]">
+        Total Points: <span style$="color: [[scoreColor]]">[[totalPoints]]</span>
+    </h2>
+    <simple-timer id="timer"
+                  start-time="3"
+                  style$="visibility: [[displayStatus]]">
+    </simple-timer>
   </template>
 
   <script>
     class NdCtDashboard extends Polymer.Element {
       static get is() { return 'nd-ct-dashboard'; }
-      
+
       static get properties() {
         return {
           colorPicked: {
@@ -51,11 +60,14 @@
           },
           scoreColor: {
             type: String
+          },
+          displayStatus: {
+            type: String
           }
         }
       }
     }
-    
+
     window.customElements.define(NdCtDashboard.is, NdCtDashboard);
   </script>
 </dom-module>

@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="nd-ct-button">
+  <template>
+    <style>
+      :host {
+      }
+
+      #button {
+        text-align: center;
+      }
+
+    </style>
+
+    <button type="button"
+            id="button"
+            on-click="_handleClick"
+            style$="display: [[displayStatus]]">
+            [[buttonText]]
+    </button>
+
+  </template>
+
+  <script>
+    class NdCtButton extends Polymer.Element {
+      static get is() { return 'nd-ct-button'; }
+
+      static get properties() {
+        return {
+          buttonText: {
+            type: String
+          },
+          displayStatus: {
+            type: String
+          }
+        }
+      }
+
+      _handleClick(e) {
+        this.dispatchEvent(new CustomEvent('buttonClicked', {
+          bubbles: true,
+          composed: true,
+        }));
+      }
+
+    }
+
+    window.customElements.define(NdCtButton.is, NdCtButton);
+  </script>
+</dom-module>

@@ -33,10 +33,12 @@
         style$="visibility: [[displayStatus]]">
         Total Points: <span style$="color: [[scoreColor]]">[[totalPoints]]</span>
     </h2>
-    <simple-timer id="timer"
-                  start-time="3"
-                  style$="visibility: [[displayStatus]]">
-    </simple-timer>
+    <template is="dom-if" if="[[displayTimer]]">
+      <simple-timer id="timer"
+                    start-time="3"
+                    style$="visibility: [[displayStatus]]">
+      </simple-timer>
+    </template>
   </template>
 
   <script>
@@ -63,6 +65,10 @@
           },
           displayStatus: {
             type: String
+          },
+          displayTimer: {
+            type: Boolean,
+            value: true
           }
         }
       }

@@ -72,6 +72,14 @@
           timeUpPenalty: {
             type: Number,
             value: -300
+          },
+          roundsPerLevel: {
+            type: Number,
+            value: 3
+          },
+          currentRound: {
+            type: Number,
+            value: 0
           }
 
         };
@@ -136,9 +144,7 @@
         if (this.allowClicks) {
             elems.timer.pause();
             this._judgeResponse();
-            this._calculateScore(elems);
-            this._displayResponseMessage(elems);
-            this._resetQuestion(elems);
+            this._endRound(elems);
         }
 
         this.allowClicks = false;
@@ -150,14 +156,30 @@
 
           if (this.allowClicks) {
             elems.timer.pause();
-            this._calculateScore(elems);
-            this._displayResponseMessage(elems);
-            this._resetQuestion(elems);
+            this._endRound(elems);
           }
 
         this.allowClicks = false;
         this.isTimeUp = false;
         }
+      }
+
+      _endRound(elems) {
+        this._calculateScore(elems);
+        this._displayResponseMessage(elems);
+        this.currentRound++;
+
+        if (this.currentRound < this.roundsPerLevel) {
+          this._resetQuestion(elems);
+        } else {
+          setTimeout(() => {this._loadNextLevel(elems)}, this.pauseTime);
+        }
+      }
+
+      _loadNextLevel(elems) {
+        this._displayLevelMessage(elems);
+        this._emptyGameField(elems);
+        elems.dashboard.setAttribute('display-timer', false);
       }
 
       _handleButtonClicked(elems) {
@@ -202,8 +224,12 @@
         elems.dashboard.setAttribute('message-color', this.messageColor);
       }
 
-      _hideDashboardElements(elems) {
-        elems.dashboard.setAttribute('display-status', 'none');
+      _displayLevelMessage(elems) {
+        this.messageText = 'Game Over!';
+        this.messageColor = 'black';
+
+        elems.dashboard.setAttribute('message-text', this.messageText);
+        elems.dashboard.setAttribute('message-color', this.messageColor);
       }
 
       _judgeResponse() {
@@ -231,13 +257,11 @@
       }
 
       _toggleDisplay(element) {
-        console.log('element.displayStatus before:', element.displayStatus);
         if (element.displayStatus === 'hidden') {
           element.displayStatus = 'visible';
         } else {
           element.displayStatus = 'hidden';
         }
-        console.log('element.displayStatus after:', element.displayStatus);
       }
 
       _resetQuestion(elems) {

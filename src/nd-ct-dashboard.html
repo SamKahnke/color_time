@@ -30,15 +30,15 @@
         [[messageText]]
     </h1>
     <h2 id="score"
-        style$="visibility: [[displayStatus]]">
+        style$="visibility: [[scoreDisplayStatus]]">
         Total Points: <span style$="color: [[scoreColor]]">[[totalPoints]]</span>
     </h2>
-    <template is="dom-if" if="[[displayTimer]]">
+    <div is="dom-if" if="[[displayTimer]]">
       <simple-timer id="timer"
                     start-time="3"
-                    style$="visibility: [[displayStatus]]">
+                    style$="visibility: [[timerDisplayStatus]]">
       </simple-timer>
-    </template>
+    </div>
   </template>
 
   <script>
@@ -63,12 +63,11 @@
           scoreColor: {
             type: String
           },
-          displayStatus: {
+          scoreDisplayStatus: {
             type: String
           },
-          displayTimer: {
-            type: Boolean,
-            value: true
+          timerDisplayStatus: {
+            type: String
           }
         }
       }

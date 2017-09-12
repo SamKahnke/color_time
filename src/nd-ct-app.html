@@ -98,7 +98,8 @@
 
         this._addListeners(elems);
         this._displayStartMessage(elems);
-        this._toggleDisplay(elems.dashboard);
+        elems.dashboard.setAttribute('timer-display-status', 'hidden');
+        elems.dashboard.setAttribute('score-display-status', 'hidden');
       }
 
       disconnectedCallback() {
@@ -179,13 +180,14 @@
       _loadNextLevel(elems) {
         this._displayLevelMessage(elems);
         this._emptyGameField(elems);
-        elems.dashboard.setAttribute('display-timer', false);
+        elems.dashboard.setAttribute('timer-display-status', 'hidden');
       }
 
       _handleButtonClicked(elems) {
         this._setUpGameField(elems);
         elems.button.setAttribute('display-status', 'none');
-        this._toggleDisplay(elems.dashboard);
+        elems.dashboard.setAttribute('timer-display-status', 'visible');
+        elems.dashboard.setAttribute('score-display-status', 'visible');
       }
 
       _displayQuestionMessage(elems) {
@@ -254,14 +256,6 @@
         }
 
         elems.dashboard.setAttribute('total-points', this.totalPoints);
-      }
-
-      _toggleDisplay(element) {
-        if (element.displayStatus === 'hidden') {
-          element.displayStatus = 'visible';
-        } else {
-          element.displayStatus = 'hidden';
-        }
       }
 
       _resetQuestion(elems) {
